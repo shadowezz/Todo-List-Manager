@@ -7,18 +7,18 @@ const Home = () => {
             <h1>Todo List Manager</h1>
             <h3>Your number one site to get your shit together.</h3>
             <br></br>
-            <button className="btn btn-success btn-home">
-                <Link to="/signup">
-                    Sign up
-                </Link>
-            </button>
+            
+            <Link className="btn btn-success btn-home" to="/signup">
+                Sign up
+            </Link>
+            
             <br></br>
             <br></br>
-            <button className="btn btn-success btn-home">
-                <Link to="/login">
-                    Log in
-                </Link>
-            </button>
+            
+            <Link className="btn btn-success btn-home" to="/login">
+                Log in
+            </Link>
+            
         </div>
     );
 };

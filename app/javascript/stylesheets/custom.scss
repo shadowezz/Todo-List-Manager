@@ -1,6 +1,8 @@
 .container-fluid {
-    background-color: blanchedalmond;
+    
     height: 100vh;
+    background-color: blanchedalmond;
+    overflow: auto;
 }
 .navbar {
    background-color: burlywood;
@@ -21,3 +23,4 @@
 h3, h1 {
    text-align: center;
 }
+

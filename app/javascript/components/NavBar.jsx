@@ -8,15 +8,19 @@ class NavBar extends React.Component {
 
     render() {
         return (
-            <nav className="navbar navbar-expand-lg justify-content-end">
-              <ul className="navbar-nav">
+            <nav className="navbar sticky-top navbar-expand-md">
+              <div className="navbar-header">
+                  <span className="navbar-brand">Todo Manager</span>
+              </div>
+              <ul className="navbar-nav ml-auto">
+
                 <li className="nav-item">
                   <span className="navbar-text">Logged in with {localStorage.getItem("email")}</span>
                 </li>
+                
                 <li className="nav-item">
-                  <button className="btn btn-outline-primary btn-sm">
-                    <Link className="nav-link" to="/" onClick={() => this.props.handleLogout}>Logout</Link>
-                  </button>
+                  <Link className="nav-link btn btn-dark btn-sm" to="/" 
+                    onClick={() => this.props.handleLogout()}>Logout</Link>
                 </li>
               </ul>
             </nav>

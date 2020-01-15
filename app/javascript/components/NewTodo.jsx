@@ -12,8 +12,7 @@ class NewTodo extends React.Component {
             description: "",
             category: "",
             deadline: new Date(),
-            errors: [],
-            hasErrors: false
+            errors: ""
         }
     ;}
 
@@ -47,14 +46,13 @@ class NewTodo extends React.Component {
         axios.post('/api/v1/todo_items/create', {todo}, {withCredentials: true})
             .then(response => {
             if (response.data.status === 'created') {
-                this.props.setMessage("New Todo created!")
+                this.props.setMessage("New Todo created successfully!")
                 this.props.history.push('/todo_items')
 
                 
             } else {
                 this.setState({
-                  errors: response.data.errors,
-                  hasErrors: true
+                  errors: response.data.errors
                 })
             }
             })
@@ -79,7 +77,7 @@ class NewTodo extends React.Component {
             <div className="row justify-content-center align-items-center h-100">
               <div className="col-3 row-6 border border-dark rounded-lg">
                 <h3>Create New Todo Item</h3>
-                {this.state.hasErrors && <div role="alert" className="alert alert-danger"> 
+                {this.state.errors != "" && <div role="alert" className="alert alert-danger"> 
                   {this.state.errors}
                 </div>}
                 <form role="form" onSubmit={this.handleSubmit}>
@@ -124,13 +122,13 @@ class NewTodo extends React.Component {
                     disableClock={true} minDate={new Date()} required/>
                   </div>
 
-                
-                  <button className="btn btn-success" placeholder="submit" type="submit">
-                    Create
-                  </button>
-
-                  <Link className="btn btn-secondary" role="button" to="/todo_items">Cancel</Link>
-                  
+                  <div className="text-center">
+                    <button className="btn btn-success btn-block" placeholder="submit" type="submit">
+                      Create
+                    </button>
+                    <Link className="btn btn-secondary btn-block" type="button" to="/todo_items">Cancel</Link>
+                  </div>
+                  <br></br>
                 </form>
               </div>
             </div>

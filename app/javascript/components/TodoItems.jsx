@@ -42,17 +42,13 @@ class TodoItems extends React.Component {
     this.setState({displayed_todos: newList})
   }
 
-  createTodo = () => {
-    this.setState({hasMessage: true, message: "New Todo created!"})
-  }
-
   updateTodo = () => {
     this.setState({update: false})
     axios.get('/api/v1/todo_items/index')
         .then(response => {
           console.log(response.data);
           this.setState({ all_todos: response.data, displayed_todos: response.data, 
-            message: "Todo item updated successfully!", hasMessage: true });
+            message: "Todo item updated successfully!"});
         })
         .catch(error => console.log("api errors:", error))
   }
@@ -131,7 +127,7 @@ class TodoItems extends React.Component {
         <div>
             <h1>Welcome {localStorage.getItem("username")}</h1>
             <h3>Here are your todo items.</h3>
-            {this.state.hasMessage && <div role="alert" className="alert alert-success"> 
+            {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
               {this.state.message}
             </div>}
             <Search all_todos={this.state.all_todos} displayed_todos={this.state.displayed_todos} 

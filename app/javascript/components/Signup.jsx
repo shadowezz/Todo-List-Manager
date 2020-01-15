@@ -10,8 +10,7 @@ class Signup extends Component {
       email: '',
       password: '',
       password_confirmation: '',
-      errors: '',
-      hasErrors: false
+      errors: ''
      };
   }
   
@@ -37,8 +36,7 @@ handleSubmit = (event) => {
           this.redirect()
         } else {
           this.setState({
-            errors: response.data.errors,
-            hasErrors: true
+            errors: response.data.errors
           })
         }
       })
@@ -64,7 +62,7 @@ return (
           <div className="row justify-content-center align-items-center h-100">
             <div className="col-3 row-6 border border-dark rounded-lg">
             <h3>Sign Up</h3>
-            {this.state.hasErrors && <div role="alert" className="alert alert-danger">
+            {this.state.errors !== "" && <div role="alert" className="alert alert-danger">
               {this.handleErrors()}
             </div>}        
             <form role="form" onSubmit={this.handleSubmit}>
@@ -112,12 +110,14 @@ return (
                   onChange={this.handleChange}
                 />
               </div>
-            
-              <button className="btn btn-success" placeholder="submit" type="submit">
-                Sign Up
-              </button>        
+              <div className="text-center">
+                <button className="btn btn-success btn-block" placeholder="submit" type="submit">
+                  Sign Up
+                </button>
+                <Link to="/login">Already have an account?</Link>
+              </div>        
             </form>
-            <Link to="/login">Already have an account?</Link>
+            
           </div>
         </div>
       </div>

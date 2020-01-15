@@ -73,7 +73,8 @@ class EditForm extends React.Component {
                                         name="title"
                                         type="text"
                                         value={this.state.title}
-                                        onChange={this.handleChange} />
+                                        onChange={this.handleChange}
+                                        required />
                             </div>
                             <div className="form-group">
                                 <label>Description</label>
@@ -97,13 +98,16 @@ class EditForm extends React.Component {
                                 <DateTimePicker onChange={this.dateChange} value={new Date(this.state.deadline)} 
                                     name="deadline" disableClock={true} minDate={new Date()}/>
                             </div>
-                            <button className="btn btn-success" placeholder="submit" type="submit">
-                                Update
-                            </button>
-                            <button onClick={this.props.cancelUpdate} 
-                                className="btn btn-secondary">
-                                    Cancel
-                            </button>
+                            <div className="text-center">
+                                <button className="btn btn-success btn-block" placeholder="submit" type="submit">
+                                    Update
+                                </button>
+                                <button onClick={this.props.cancelUpdate} 
+                                    className="btn btn-secondary btn-block">
+                                        Cancel
+                                </button>
+                                <br></br>
+                            </div>
                         </form>
                     </div>
                 </div>

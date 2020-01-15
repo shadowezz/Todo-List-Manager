@@ -10,8 +10,7 @@ class Login extends Component {
     this.state = { 
       email: '',
       password: '',
-      errors: '',
-      hasErrors: false
+      errors: ''
      };
   }
 handleChange = (event) => {
@@ -38,7 +37,6 @@ axios.post('api/v1/login', {user}, {withCredentials: true})
       } else {
         this.setState({
           errors: response.data.errors,
-          hasErrors: true,
           email: '',
           password: ''
         })
@@ -57,7 +55,7 @@ return (
           <div className="row justify-content-center align-items-center h-100">
             <div className="col-3 row-6 border border-dark rounded-lg">
               <h3>Log In</h3>
-              {this.state.hasErrors && <div role="alert" className="alert alert-danger">
+              {this.state.errors !== "" && <div role="alert" className="alert alert-danger">
                 {this.state.errors}
               </div>}
               <form role="form" onSubmit={this.handleSubmit}>
@@ -83,13 +81,14 @@ return (
                     onChange={this.handleChange}
                   />
                 </div>
-                <button className="btn btn-success" placeholder="submit" type="submit">
-                  Log In
-                </button>
-                <div>
-                or <Link to='/signup'>sign up</Link>
+                <div className="text-center">
+                  <button className="btn btn-success btn-block" placeholder="submit" type="submit">
+                    Log In
+                  </button>
+                  <div>
+                    <Link to='/signup'>Sign up for a new account!</Link>
+                  </div>
                 </div>
-                
               </form>
             </div>
           </div>
