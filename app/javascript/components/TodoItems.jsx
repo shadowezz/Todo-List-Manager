@@ -5,7 +5,7 @@ import EditForm from './EditForm';
 import Search from './Search';
 import NavBar from './NavBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faPencilAlt, faSearch, faPlusSquare} from '@fortawesome/free-solid-svg-icons'
+import { faCheckCircle, faPencilAlt, faPlusSquare, faSortAlphaDown, faSortNumericDown, faSortNumericDownAlt} from '@fortawesome/free-solid-svg-icons'
 
 class TodoItems extends React.Component {
   constructor(props) {
@@ -81,6 +81,35 @@ class TodoItems extends React.Component {
       .catch(error => console.log(error))
   }
 
+  dynamicSort(key, order = 'asc') {
+    return (a, b) => {
+        let comparison = 0
+        if (!a[key]) {
+            return comparison
+        }
+        else if (a[key].toLowerCase() > b[key].toLowerCase()) {
+            comparison = 1
+        }
+        else if (a[key].toLowerCase() < b[key].toLowerCase()) {
+            comparison = -1
+        }
+        return (order === 'desc') ? comparison * -1 : comparison
+    }
+  }
+
+  handleSort(key) {
+      let newList
+      if (key === "created_at") {
+        newList = this.state.displayed_todos.sort(this.dynamicSort(key, 'desc'))
+      }
+      else {
+        newList = this.state.displayed_todos.sort(this.dynamicSort(key, 'asc'))
+      }
+
+      this.setState({displayed_todos: newList})
+  }
+
+
   render() {
     const allTodos = this.state.displayed_todos.map((todo, index) => (
       <tr key={index}>
@@ -138,11 +167,26 @@ class TodoItems extends React.Component {
               <thead className="thead-dark">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Title</th>
+                  <th scope="col">
+                    Title
+                    <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("title")}>
+                      <FontAwesomeIcon icon={faSortAlphaDown}/>
+                    </button>
+                  </th>
                   <th scope="col">Description</th>
                   <th scope="col">Category</th>
-                  <th scope="col">Deadline</th>
-                  <th scope="col">Created at</th>
+                  <th scope="col">
+                    Deadline
+                    <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("deadline")}>
+                      <FontAwesomeIcon icon={faSortNumericDown}/>
+                    </button>
+                  </th>
+                  <th scope="col">
+                    Created at
+                    <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("created_at")}>
+                      <FontAwesomeIcon icon={faSortNumericDownAlt}/>
+                    </button>
+                  </th>
                   <th scope="col" colSpan="2">Options</th>
                 </tr>
               </thead>
