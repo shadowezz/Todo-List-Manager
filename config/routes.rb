@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'todo_items/index'
+      get 'todo_items/completed', 'todo_items#completed'
       post 'todo_items/create'
       put '/update/:id', to: 'todo_items#update'
       delete '/destroy/:id', to: 'todo_items#destroy'

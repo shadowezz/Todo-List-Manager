@@ -6,6 +6,7 @@ import Login from './Login'
 import Signup from './Signup'
 import TodoItems from './TodoItems'
 import NewTodo from './NewTodo'
+import CompletedTodo from './CompletedTodo'
 
 
 class App extends Component {
@@ -17,21 +18,21 @@ class App extends Component {
       message: ''
      };
   }
-  componentDidMount() {
-    this.loginStatus()
-  }
-  loginStatus = () => {
-    axios.get('api/v1/logged_in', {withCredentials: true})
-    .then(response => {
-      if (response.data.logged_in) {
-        this.handleLogin(response)
+  // componentDidMount() {
+  //   this.loginStatus()
+  // }
+  // loginStatus = () => {
+  //   axios.get('api/v1/logged_in', {withCredentials: true})
+  //   .then(response => {
+  //     if (response.data.logged_in) {
+  //       this.handleLogin(response)
         
-      } else {
-        this.handleLogout()
-      }
-    })
-    .catch(error => console.log('api errors:', error))
-  }
+  //     } else {
+  //       this.handleLogout()
+  //     }
+  //   })
+  //   .catch(error => console.log('api errors:', error))
+  // }
   handleLogin = (data) => {
     this.setState({
       isLoggedIn: true,
@@ -53,6 +54,11 @@ class App extends Component {
 
   setMessage = (message) => {
     this.setState({message: message})
+  }
+
+  formatDate(string) {
+    let options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'}
+    return new Date(string).toLocaleDateString([], options);
   }
 
   render() {
@@ -81,13 +87,21 @@ class App extends Component {
             <Route
               exact path='/todo_items'
               render={props => (
-              <TodoItems {...props} handleLogout={this.handleLogout} message={this.state.message}/>
+              <TodoItems {...props} handleLogout={this.handleLogout} message={this.state.message}
+                formatDate={this.formatDate}/>
               )}
             />
             <Route
               exact path='/todo_items/new'
               render={props => (
               <NewTodo {...props} handleLogout={this.handleLogout} setMessage={this.setMessage}/>
+              )}
+            />
+            <Route
+              exact path='/todo_items/completed'
+              render={props => (
+              <CompletedTodo {...props} handleLogout={this.handleLogout} setMessage={this.setMessage}
+                formatDate={this.formatDate}/>
               )}
             />
           </Switch>

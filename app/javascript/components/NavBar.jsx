@@ -12,6 +12,19 @@ class NavBar extends React.Component {
               <div className="navbar-header">
                   <span className="navbar-brand">Todo Manager</span>
               </div>
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                  <Link className="nav-link btn btn-dark btn-sm" to="/todo_items">
+                    Current Todos
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link btn btn-dark btn-sm" to="/todo_items/completed">
+                    Completed Todos
+                  </Link>
+                </li>
+              </ul>
+
               <ul className="navbar-nav ml-auto">
 
                 <li className="nav-item">
@@ -20,7 +33,8 @@ class NavBar extends React.Component {
                 
                 <li className="nav-item">
                   <Link className="nav-link btn btn-dark btn-sm" to="/" 
-                    onClick={() => this.props.handleLogout()}>Logout</Link>
+                    onClick={() => this.props.handleLogout}>Logout
+                  </Link>
                 </li>
               </ul>
             </nav>

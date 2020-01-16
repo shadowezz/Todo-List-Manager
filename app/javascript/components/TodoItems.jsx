@@ -73,17 +73,6 @@ class TodoItems extends React.Component {
     .catch(error => console.log(error))
   }
 
-  openModalHandler(todo) {
-    this.setState({
-        showModal: todo
-    });
-  }
-
-  closeModalHandler() {
-    this.setState({
-        showModal: false
-    });
-  }
 
   deleteTodo = (id) => {
     axios.delete(`/api/v1/destroy/${id}`, {withCredentials:true})
@@ -133,8 +122,8 @@ class TodoItems extends React.Component {
         <td>{todo.title}</td>
         <td>{todo.description}</td>
         <td>{todo.category}</td>
-        <td>{todo.deadline.slice(0, 16)}</td>
-        <td>{todo.created_at.slice(0, 16)}</td>
+        <td>{this.props.formatDate(todo.deadline)}</td>
+        <td>{this.props.formatDate(todo.created_at)}</td>
         <td>
           <button className="btn btn-info" type="button" onClick={() => this.setState({update: todo})}>
             <FontAwesomeIcon icon={faPencilAlt}/> Update
@@ -199,50 +188,50 @@ class TodoItems extends React.Component {
           </div>
         <div>
             <h1>Welcome {localStorage.getItem("username")}</h1>
-            <h3>Here are your todo items.</h3>
+            <h3>Here are your current todo items.</h3>
             {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
               {this.state.message}
             </div>}
             <Search all_todos={this.state.all_todos} displayed_todos={this.state.displayed_todos} 
               updateDisplay={this.updateDisplay}/>
-          </div>
-          <div>
-            <table className="table table-striped">
-              <thead className="thead-dark">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">
-                    Title
-                    <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("title")}>
-                      <FontAwesomeIcon icon={faSortAlphaDown}/>
-                    </button>
-                  </th>
-                  <th scope="col">Description</th>
-                  <th scope="col">Category</th>
-                  <th scope="col">
-                    Deadline
-                    <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("deadline")}>
-                      <FontAwesomeIcon icon={faSortNumericDown}/>
-                    </button>
-                  </th>
-                  <th scope="col">
-                    Created at
-                    <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("created_at")}>
-                      <FontAwesomeIcon icon={faSortNumericDownAlt}/>
-                    </button>
-                  </th>
-                  <th scope="col" colSpan="3">Options</th>
-                </tr>
-              </thead>
-              <tbody>
-                { allTodos }
-              </tbody>
-            </table>
-          </div>
-          <Link className="btn btn-success btn-lg btn-block" role="button" to="/todo_items/new">
-            <FontAwesomeIcon icon={faPlusSquare}/>Create New Todo!
-          </Link>
         </div>
+        <div>
+          <table className="table table-striped">
+            <thead className="thead-dark">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">
+                  Title
+                  <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("title")}>
+                    <FontAwesomeIcon icon={faSortAlphaDown}/>
+                  </button>
+                </th>
+                <th scope="col">Description</th>
+                <th scope="col">Category</th>
+                <th scope="col">
+                  Deadline
+                  <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("deadline")}>
+                    <FontAwesomeIcon icon={faSortNumericDown}/>
+                  </button>
+                </th>
+                <th scope="col">
+                  Created at
+                  <button className="btn btn-sm btn-light" type="button" onClick={() => this.handleSort("created_at")}>
+                    <FontAwesomeIcon icon={faSortNumericDownAlt}/>
+                  </button>
+                </th>
+                <th scope="col" colSpan="3">Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              { allTodos }
+            </tbody>
+          </table>
+        </div>
+        <Link className="btn btn-success btn-lg btn-block" role="button" to="/todo_items/new">
+          <FontAwesomeIcon icon={faPlusSquare}/>Create New Todo!
+        </Link>
+      </div>
       )
     }
 

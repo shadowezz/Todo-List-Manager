@@ -7,6 +7,12 @@ class Api::V1::TodoItemsController < ApplicationController
     render json: @todo_items
   end
 
+  def completed
+    @todo_items = TodoItem.where(user: current_user).where(current_status: 'completed').order(deadline: :ASC)
+    render json: @todo_items
+  end
+
+
   def create
     @todo_item = TodoItem.new(todo_item_params)
     @todo_item.user = current_user
@@ -44,7 +50,7 @@ class Api::V1::TodoItemsController < ApplicationController
   private
 
   def todo_item_params
-    params.require(:todo).permit(:title, :description, :category, :deadline, :status)
+    params.require(:todo).permit(:title, :description, :category, :deadline, :current_status)
   end
 
   def set_todo_item
