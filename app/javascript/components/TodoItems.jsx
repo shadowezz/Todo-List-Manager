@@ -5,7 +5,7 @@ import EditForm from './EditForm';
 import Search from './Search';
 import NavBar from './NavBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faPencilAlt, faPlusSquare, faSortAlphaDown, faSortNumericDown, faSortNumericDownAlt} from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faCheckCircle, faPencilAlt, faPlusSquare, faSortAlphaDown, faSortNumericDown, faSortNumericDownAlt} from '@fortawesome/free-solid-svg-icons'
 
 class TodoItems extends React.Component {
   constructor(props) {
@@ -16,7 +16,8 @@ class TodoItems extends React.Component {
       hasMessage: false,
       message: this.props.message,
       update: false,
-      deleting: false
+      deleting: false,
+      completing: false
     };
     this.updateTodo = this.updateTodo.bind(this)
     this.cancelUpdate = this.cancelUpdate.bind(this)
@@ -55,6 +56,21 @@ class TodoItems extends React.Component {
 
   cancelUpdate() {
     this.setState({update: false, hasMessage: false})
+  }
+
+  completeTodo(id) {
+    let todo = {current_status: "completed"}
+    axios.put(`api/v1/update/${id}`, {todo}, {withCredentials: true})
+      .then(response => {
+        console.log(response.data.status)
+      })
+    .then(this.setState({
+      displayed_todos: this.state.displayed_todos.filter((item) => item.id != id),
+      message: "Todo item moved to Completed",
+      hasMessage: true,
+      completing: false
+    }))
+    .catch(error => console.log(error))
   }
 
   openModalHandler(todo) {
@@ -112,28 +128,56 @@ class TodoItems extends React.Component {
 
   render() {
     const allTodos = this.state.displayed_todos.map((todo, index) => (
-      <tr key={index}>
+      <tr key={index} className="status" cond="hello">
         <th>{index + 1}</th>
         <td>{todo.title}</td>
         <td>{todo.description}</td>
         <td>{todo.category}</td>
-        <td>{todo.deadline ? todo.deadline.slice(0, 16) : ""}</td>
+        <td>{todo.deadline.slice(0, 16)}</td>
         <td>{todo.created_at.slice(0, 16)}</td>
         <td>
           <button className="btn btn-info" type="button" onClick={() => this.setState({update: todo})}>
             <FontAwesomeIcon icon={faPencilAlt}/> Update
           </button>
         </td>
-        <td><button className="btn btn-warning" type="button" data-toggle="modal" data-target="#myModal" 
+        <td><button className="btn btn-warning" type="button" data-toggle="modal" data-target="#completeModal" 
+          onClick={() => this.setState({completing: todo})}>
+          <FontAwesomeIcon icon={faCheckCircle}/>Completed</button>
+        </td>
+        <td><button className="btn btn-danger" type="button" data-toggle="modal" data-target="#deleteModal" 
           onClick={() => this.setState({deleting: todo})}>
-          <FontAwesomeIcon icon={faCheckCircle}/>Completed</button></td>
+          <FontAwesomeIcon icon={faTrash}/>Delete</button>
+        </td>
       </tr>
     ));
     if (!this.state.update) {
       return (
         <div className="container-fluid">
-          <NavBar handleLogout={this.props.handleLogout}/>         
-          <div className="modal fade" id="myModal" tabIndex="-1" role="dialog">
+          <NavBar handleLogout={this.props.handleLogout}/>
+
+          <div className="modal fade" id="completeModal" tabIndex="-1" role="dialog">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Complete Todo Item</h5>
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div className="modal-body">
+                  Are you sure you want to complete this todo item "{this.state.completing.title}"?
+                  This will be moved to the completed section.
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" className="btn btn-primary" data-dismiss="modal"
+                    onClick={() => this.completeTodo(this.state.completing.id)}>Complete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
               <div className="modal-content">
                 <div className="modal-header">
@@ -187,7 +231,7 @@ class TodoItems extends React.Component {
                       <FontAwesomeIcon icon={faSortNumericDownAlt}/>
                     </button>
                   </th>
-                  <th scope="col" colSpan="2">Options</th>
+                  <th scope="col" colSpan="3">Options</th>
                 </tr>
               </thead>
               <tbody>

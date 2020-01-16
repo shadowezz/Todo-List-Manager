@@ -96,7 +96,7 @@ class EditForm extends React.Component {
                                 <label>Deadline</label>
                                 <br></br>
                                 <DateTimePicker onChange={this.dateChange} value={new Date(this.state.deadline)} 
-                                    name="deadline" disableClock={true} minDate={new Date()}/>
+                                    name="deadline" disableClock={true} minDate={new Date()} required/>
                             </div>
                             <div className="text-center">
                                 <button className="btn btn-success btn-block" placeholder="submit" type="submit">
