@@ -3,7 +3,7 @@ class Api::V1::TodoItemsController < ApplicationController
   before_action :set_todo_item, only: [:destroy, :update]
   
   def index
-    @todo_items = TodoItem.where(user: current_user).where(status: nil).order(deadline: :ASC)
+    @todo_items = TodoItem.where(user: current_user).where(current_status: nil).order(deadline: :ASC)
     render json: @todo_items
   end
 
