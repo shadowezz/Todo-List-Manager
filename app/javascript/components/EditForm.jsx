@@ -20,11 +20,11 @@ class EditForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    componentDidMount() {
-        if (!localStorage.getItem('logged_in')) {
-          this.props.history.push('/')
-        }
-    }
+    // componentDidMount() {
+    //     if (this.props.checkLogin()) {
+    //         this.props.history.push('/')
+    //     }
+    // }
 
     editTodo = (id, todo) => {
         axios.put(`api/v1/update/${id}`, {todo}, {withCredentials: true})
@@ -62,7 +62,7 @@ class EditForm extends React.Component {
     render() {
         return(
             <div className="container-fluid">
-                <NavBar handleLogout={this.props.handleLogout}/>
+                <NavBar user={this.props.user} handleLogout={this.props.handleLogout}/>
                 <div className="row justify-content-center align-items-center h-100">
                     <div className="col-3 row-6 border border-dark rounded-lg">
                         <h3>Update Todo Item</h3>

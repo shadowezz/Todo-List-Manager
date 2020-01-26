@@ -28,12 +28,12 @@ class NavBar extends React.Component {
               <ul className="navbar-nav ml-auto">
 
                 <li className="nav-item">
-                  <span className="navbar-text">Logged in with {localStorage.getItem("email")}</span>
+                  <span className="navbar-text">Logged in with {this.props.user.email}</span>
                 </li>
                 
                 <li className="nav-item">
                   <Link className="nav-link btn btn-dark btn-sm" to="/" 
-                    onClick={() => this.props.handleLogout}>Logout
+                    onClick={() => this.props.handleLogout()}>Logout
                   </Link>
                 </li>
               </ul>

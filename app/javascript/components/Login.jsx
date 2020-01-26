@@ -30,9 +30,10 @@ let user = {
 axios.post('api/v1/login', {user}, {withCredentials: true})
     .then(response => {
       if (response.data.logged_in) {
-        localStorage.setItem('logged_in', true)
-        localStorage.setItem('username', response.data.user.username)
-        localStorage.setItem('email', response.data.user.email)
+        // localStorage.setItem('logged_in', true)
+        // localStorage.setItem('username', response.data.user.username)
+        // localStorage.setItem('email', response.data.user.email)
+        this.props.handleLogin(response.data.user)
         this.redirect()
       } else {
         this.setState({

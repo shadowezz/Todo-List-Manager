@@ -16,8 +16,9 @@ class NewTodo extends React.Component {
         }
     ;}
 
-    componentDidMount() {
-        if (!localStorage.getItem('logged_in')) {
+    async componentDidMount() {
+        await this.props.checkLogin()
+        if (!this.props.isLoggedIn) {
           this.props.history.push('/')
         }
     }
@@ -73,7 +74,7 @@ class NewTodo extends React.Component {
         const {title, description, category, deadline} = this.state
     return (
           <div className="container-fluid">
-            <NavBar handleLogout={this.props.handleLogout}/>
+            <NavBar user={this.props.user} handleLogout={this.props.handleLogout}/>
             <div className="row justify-content-center align-items-center h-100">
               <div className="col-3 row-6 border border-dark rounded-lg">
                 <h3>Create New Todo Item</h3>

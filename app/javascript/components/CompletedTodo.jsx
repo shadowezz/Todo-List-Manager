@@ -19,8 +19,10 @@ class CompletedTodo extends React.Component {
     this.updateDisplay = this.updateDisplay.bind(this)
   }
 
-  componentDidMount() {
-    if (!localStorage.getItem('logged_in')) {
+  async componentDidMount() {
+    await this.props.checkLogin()
+    console.log(this.props.isLoggedIn)
+    if (!this.props.isLoggedIn) {
       this.props.history.push('/')
     }
     else {
@@ -95,7 +97,7 @@ class CompletedTodo extends React.Component {
 
     return (
         <div className="container-fluid">
-            <NavBar handleLogout={this.props.handleLogout}/>
+            <NavBar handleLogout={this.props.handleLogout} user={this.props.user}/>
 
             <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog">
                 <div className="modal-dialog" role="document">
@@ -119,7 +121,7 @@ class CompletedTodo extends React.Component {
             </div>
 
             <div>
-                <h1>Welcome {localStorage.getItem("username")}</h1>
+                <h1>Welcome {this.props.user.username}</h1>
                 <h3>Here are your completed todo items.</h3>
                 {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
                     {this.state.message}

@@ -25,11 +25,15 @@ class TodoItems extends React.Component {
   }
 
 
-  componentDidMount() {
-    if (!localStorage.getItem('logged_in')) {
+  async componentDidMount() {
+    await this.props.checkLogin()
+    console.log(this.props.isLoggedIn)
+    if (!this.props.isLoggedIn) {
+      console.log("hi")
       this.props.history.push('/')
     }
     else {
+      console.log("hello")
       axios.get('/api/v1/todo_items/index')
         .then(response => {
           console.log(response.data);
@@ -142,7 +146,7 @@ class TodoItems extends React.Component {
     if (!this.state.update) {
       return (
         <div className="container-fluid">
-          <NavBar handleLogout={this.props.handleLogout}/>
+          <NavBar handleLogout={this.props.handleLogout} user={this.props.user}/>
 
           <div className="modal fade" id="completeModal" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
@@ -187,7 +191,7 @@ class TodoItems extends React.Component {
             </div>
           </div>
         <div>
-            <h1>Welcome {localStorage.getItem("username")}</h1>
+            <h1>Welcome {this.props.user.username}</h1>
             <h3>Here are your current todo items.</h3>
             {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
               {this.state.message}
@@ -238,6 +242,7 @@ class TodoItems extends React.Component {
     else {
       return (
         <EditForm todo = {this.state.update} updateTodo = {this.updateTodo} 
+          user={this.props.user} checkLogin={this.props.checkLogin} 
           cancelUpdate = {this.cancelUpdate}/>
       )
     }
