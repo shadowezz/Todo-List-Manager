@@ -19,7 +19,8 @@ class NewTodo extends React.Component {
     async componentDidMount() {
         await this.props.checkLogin()
         if (!this.props.isLoggedIn) {
-          this.props.history.push('/')
+          this.props.history.push('/login')
+          this.props.setMessage("Please login to continue.")
         }
     }
   
@@ -57,8 +58,9 @@ class NewTodo extends React.Component {
                 })
             }
             })
-            .catch(error => console.log('api errors:', error))
+            .catch(error => console.log('api errors:', error))  
         };
+        
 
     handleErrors = () => {
         return (

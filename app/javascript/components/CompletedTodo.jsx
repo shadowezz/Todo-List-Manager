@@ -23,7 +23,8 @@ class CompletedTodo extends React.Component {
     await this.props.checkLogin()
     console.log(this.props.isLoggedIn)
     if (!this.props.isLoggedIn) {
-      this.props.history.push('/')
+      this.props.history.push('/login')
+      this.props.setMessage("Please login to continue.")
     }
     else {
       axios.get('/api/v1/todo_items/completed')
@@ -121,9 +122,10 @@ class CompletedTodo extends React.Component {
             </div>
 
             <div>
-                <h1>Welcome {this.props.user.username}</h1>
+                <h1>Welcome {localStorage.getItem("username")}</h1>
                 <h3>Here are your completed todo items.</h3>
-                {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
+                {this.state.message !== "" && <div role="alert" className="alert alert-success alert-dismissable">
+                    <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={() => this.props.clearMessage()}>&times;</a> 
                     {this.state.message}
                 </div>}
                 <Search all_todos={this.state.all_todos} displayed_todos={this.state.displayed_todos} 

@@ -25,7 +25,7 @@ class Api::V1::SessionsController < ApplicationController
     else
       render json: {
         logged_in: false,
-        message: 'no such user'
+        user: nil
       }
     end
   end

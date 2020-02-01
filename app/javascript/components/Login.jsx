@@ -21,6 +21,7 @@ handleChange = (event) => {
   };
 handleSubmit = (event) => {
     event.preventDefault()
+    this.props.clearMessage();
     const {email, password} = this.state
 let user = {
       email: email,
@@ -30,10 +31,10 @@ let user = {
 axios.post('api/v1/login', {user}, {withCredentials: true})
     .then(response => {
       if (response.data.logged_in) {
-        // localStorage.setItem('logged_in', true)
-        // localStorage.setItem('username', response.data.user.username)
-        // localStorage.setItem('email', response.data.user.email)
-        this.props.handleLogin(response.data.user)
+        localStorage.setItem('username', response.data.user.username)
+        localStorage.setItem('email', response.data.user.email)
+        this.props.handleLogin(response.data)
+        this.props.clearMessage()
         this.redirect()
       } else {
         this.setState({
@@ -54,10 +55,15 @@ render() {
 return (
         <div className="container-fluid">
           <div className="row justify-content-center align-items-center h-100">
-            <div className="col-3 row-6 border border-dark rounded-lg">
+            
+            <div className="col-md-3 row-md-6 border border-dark rounded-lg">
               <h3>Log In</h3>
+              
               {this.state.errors !== "" && <div role="alert" className="alert alert-danger">
                 {this.state.errors}
+              </div>}
+              {this.props.message !== "" && <div role="alert" className="alert alert-danger">
+                {this.props.message}
               </div>}
               <form role="form" onSubmit={this.handleSubmit}>
                 <div className="form-group">

@@ -20,12 +20,6 @@ class EditForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    // componentDidMount() {
-    //     if (this.props.checkLogin()) {
-    //         this.props.history.push('/')
-    //     }
-    // }
-
     editTodo = (id, todo) => {
         axios.put(`api/v1/update/${id}`, {todo}, {withCredentials: true})
             .then(response => {

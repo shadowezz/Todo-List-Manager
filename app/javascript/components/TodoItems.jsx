@@ -13,6 +13,7 @@ class TodoItems extends React.Component {
     this.state = {
       all_todos: [],
       displayed_todos: [],
+      overdue_todos: 0,
       hasMessage: false,
       message: this.props.message,
       update: false,
@@ -22,6 +23,7 @@ class TodoItems extends React.Component {
     this.updateTodo = this.updateTodo.bind(this)
     this.cancelUpdate = this.cancelUpdate.bind(this)
     this.updateDisplay = this.updateDisplay.bind(this)
+    this.checkStatus = this.checkStatus.bind(this)
   }
 
 
@@ -29,18 +31,27 @@ class TodoItems extends React.Component {
     await this.props.checkLogin()
     console.log(this.props.isLoggedIn)
     if (!this.props.isLoggedIn) {
-      console.log("hi")
-      this.props.history.push('/')
+      this.props.history.push('/login')
+      this.props.setMessage("Please login to continue.")
+
     }
     else {
-      console.log("hello")
+      console.log(this.state.message)
       axios.get('/api/v1/todo_items/index')
         .then(response => {
           console.log(response.data);
-          this.setState({ all_todos: response.data, displayed_todos: response.data });
+          this.setState({all_todos: response.data, displayed_todos: response.data.map(this.checkStatus) });
         })
         .catch(error => console.log("api errors:", error))
       }
+  }
+
+  checkStatus(todo) {
+    if (new Date(todo.deadline).getTime() < new Date().getTime()) {
+      todo["status"] = "overdue"
+      this.setState({overdue_todos: this.state.overdue_todos + 1})
+    }
+    return todo
   }
 
   updateDisplay = (newList) => {
@@ -52,7 +63,8 @@ class TodoItems extends React.Component {
     axios.get('/api/v1/todo_items/index')
         .then(response => {
           console.log(response.data);
-          this.setState({ all_todos: response.data, displayed_todos: response.data, 
+          this.setState({overdue_todos: 0})
+          this.setState({all_todos: response.data, displayed_todos: response.data.map(this.checkStatus), 
             message: "Todo item updated successfully!"});
         })
         .catch(error => console.log("api errors:", error))
@@ -62,30 +74,44 @@ class TodoItems extends React.Component {
     this.setState({update: false, hasMessage: false})
   }
 
-  completeTodo(id) {
+  completeTodo(todoItem) {
+    let overdue = 0
+    if (todoItem.status == "overdue") {
+      overdue = 1
+    }
     let todo = {current_status: "completed"}
-    axios.put(`api/v1/update/${id}`, {todo}, {withCredentials: true})
+    axios.put(`api/v1/update/${todoItem.id}`, {todo}, {withCredentials: true})
       .then(response => {
         console.log(response.data.status)
       })
     .then(this.setState({
-      displayed_todos: this.state.displayed_todos.filter((item) => item.id != id),
+      displayed_todos: this.state.displayed_todos.filter((item) => item.id != todoItem.id),
       message: "Todo item moved to Completed",
       hasMessage: true,
-      completing: false
+      completing: false,
+      overdue_todos: this.state.overdue_todos - overdue
     }))
     .catch(error => console.log(error))
   }
 
 
-  deleteTodo = (id) => {
-    axios.delete(`/api/v1/destroy/${id}`, {withCredentials:true})
+  deleteTodo(todoItem) {
+    let overdue = 0
+    if (todoItem.status == "overdue") {
+      overdue = 1
+    }
+    axios.delete(`/api/v1/destroy/${todoItem.id}`, {withCredentials:true})
       .then(response => {
         console.log(response.data.message)
-        const new_todos = this.state.all_todos.filter((item) => item.id != id)
-        const new_display = this.state.displayed_todos.filter((item) => item.id != id)
-        this.setState({ all_todos: new_todos, displayed_todos: new_display, 
-          message: response.data.message, hasMessage: true, deleting: false})
+        const new_todos = this.state.all_todos.filter((item) => item.id != todoItem.id)
+        const new_display = this.state.displayed_todos.filter((item) => item.id != todoItem.id)
+        this.setState({ 
+          all_todos: new_todos, 
+          displayed_todos: new_display, 
+          message: response.data.message, 
+          hasMessage: true, 
+          deleting: false,
+          overdue_todos: this.state.overdue_todos - overdue})
       })
       .catch(error => console.log(error))
   }
@@ -121,7 +147,7 @@ class TodoItems extends React.Component {
 
   render() {
     const allTodos = this.state.displayed_todos.map((todo, index) => (
-      <tr key={index} className="status" cond="hello">
+      <tr key={index} className={todo.status}>
         <th>{index + 1}</th>
         <td>{todo.title}</td>
         <td>{todo.description}</td>
@@ -146,7 +172,7 @@ class TodoItems extends React.Component {
     if (!this.state.update) {
       return (
         <div className="container-fluid">
-          <NavBar handleLogout={this.props.handleLogout} user={this.props.user}/>
+          <NavBar handleLogout={this.props.handleLogout} clearMessage={this.props.clearMessage}/>
 
           <div className="modal fade" id="completeModal" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
@@ -164,7 +190,7 @@ class TodoItems extends React.Component {
                 <div className="modal-footer">
                   <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
                   <button type="button" className="btn btn-primary" data-dismiss="modal"
-                    onClick={() => this.completeTodo(this.state.completing.id)}>Complete</button>
+                    onClick={() => this.completeTodo(this.state.completing)}>Complete</button>
                 </div>
               </div>
             </div>
@@ -185,15 +211,17 @@ class TodoItems extends React.Component {
                 <div className="modal-footer">
                   <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
                   <button type="button" className="btn btn-primary" data-dismiss="modal"
-                    onClick={() => this.deleteTodo(this.state.deleting.id)}>Delete</button>
+                    onClick={() => this.deleteTodo(this.state.deleting)}>Delete</button>
                 </div>
               </div>
             </div>
           </div>
         <div>
-            <h1>Welcome {this.props.user.username}</h1>
+            <h1>Welcome {localStorage.getItem("username")}</h1>
             <h3>Here are your current todo items.</h3>
-            {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
+            {this.state.overdue_todos > 0 && <h5>You have {this.state.overdue_todos} overdue todo items!</h5>}
+            {this.state.message !== "" && <div role="alert" className="alert alert-success alert-dismissable"> 
+              <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={() => this.props.clearMessage()}>&times;</a>
               {this.state.message}
             </div>}
             <Search all_todos={this.state.all_todos} displayed_todos={this.state.displayed_todos} 

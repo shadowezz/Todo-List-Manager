@@ -20,11 +20,15 @@
    width: 150px;
 }
 
-h3, h1 {
+h5, h3, h1 {
    text-align: center;
 }
 
-// tr.status[cond="hello"] {
-//    background-color: red;
-// }
+tr.overdue {
+   color: red;
+}
+
+.border {
+   background-color: aqua;
+}
 
