@@ -17,7 +17,6 @@ Rails.application.routes.draw do
   end
   namespace :api do
     namespace :v1 do
-      get 'users/index'
       post 'users/create'
     end
   end

@@ -1,10 +1,9 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import axios from 'axios'
 import DateTimePicker from 'react-datetime-picker'
 import NavBar from './NavBar'
 
-
+//page to update todos
 class EditForm extends React.Component {
     constructor(props) {
         super(props)
@@ -18,9 +17,12 @@ class EditForm extends React.Component {
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
+        this.dateChange = this.dateChange.bind(this)
+        this.editTodo = this.editTodo.bind(this)
     }
 
-    editTodo = (id, todo) => {
+    //update todo on backend
+    editTodo(id, todo) {
         axios.put(`api/v1/update/${id}`, {todo}, {withCredentials: true})
             .then(response => {
                 console.log(response.data.status)
@@ -30,15 +32,18 @@ class EditForm extends React.Component {
         
     }
 
-    handleChange = (event) => {
+    //changes state according to changes in the input fields of update form
+    handleChange(event) {
         this.setState({[event.target.name]: event.target.value})
     }
 
-    dateChange = (deadline) => {
+    //changes state of deadline according to changes in datepicker
+    dateChange(deadline) {
         this.setState({deadline: deadline})
     }
 
-    handleSubmit = (event) => {
+    //submit update form
+    handleSubmit(event) {
         event.preventDefault()
         const { id, title, description, category, deadline } = this.state
         let todo = {
@@ -51,14 +56,13 @@ class EditForm extends React.Component {
         
     }
 
-
-
+    //displays update form
     render() {
         return(
             <div className="container-fluid">
-                <NavBar user={this.props.user} handleLogout={this.props.handleLogout}/>
+                <NavBar handleLogout={this.props.handleLogout}/>
                 <div className="row justify-content-center align-items-center h-100">
-                    <div className="col-3 row-6 border border-dark rounded-lg">
+                    <div className="col-md-3 row-md-6 border border-dark rounded-lg">
                         <h3>Update Todo Item</h3>
                         <form role="form" onSubmit={this.handleSubmit}>
                             <div className="form-group">

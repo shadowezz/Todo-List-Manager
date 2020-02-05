@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios'
 import {Link} from "react-router-dom";
 
+//Sign up page
 class Signup extends Component {
   constructor(props) {
     super(props);
@@ -12,40 +13,48 @@ class Signup extends Component {
       password_confirmation: '',
       errors: ''
      };
+
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleErrors = this.handleErrors.bind(this)
   }
-  
-handleChange = (event) => {
+
+//updates the corresponding state when form input changes  
+handleChange(event) {
     const {name, value} = event.target
     this.setState({
       [name]: value
     })
-  };
-handleSubmit = (event) => {
-    event.preventDefault()
-    const {username, email, password, password_confirmation} = this.state
-    let user = {
-      username: username,
-      email: email,
-      password: password,
-      password_confirmation: password_confirmation
-    }
-    axios.post('api/v1/users/create', {user}, {withCredentials: true})
-      .then(response => {
-        if (response.data.status === 'created') {
-          this.props.handleLogin(response.data)
-          this.redirect()
-        } else {
-          this.setState({
-            errors: response.data.errors
-          })
-        }
-      })
-      .catch(error => console.log('api errors:', error))
-  };
-redirect = () => {
-    this.props.history.push('/')
+};
+
+//submits signup form to backend for authentication
+handleSubmit(event) {
+  event.preventDefault()
+  const {username, email, password, password_confirmation} = this.state
+  let user = {
+    username: username,
+    email: email,
+    password: password,
+    password_confirmation: password_confirmation
   }
-handleErrors = () => {
+  /*if account created successfully, redirect to login page with success message,
+  else display error messages */
+  axios.post('api/v1/users/create', {user}, {withCredentials: true})
+    .then(response => {
+      if (response.data.status === 'created') {
+        this.props.setMessage(response.data.message)
+        this.props.history.push('/login')
+      } else {
+        this.setState({
+          errors: response.data.errors
+        })
+      }
+    })
+    .catch(error => console.log('api errors:', error))
+};
+
+//handles the display of error messages
+handleErrors() {
     return (
       <div>
         <ul className="list-unstyled">{this.state.errors.map((error) => {
@@ -54,17 +63,21 @@ handleErrors = () => {
         </ul> 
       </div>
     )
-  }
+}
+
+//display signup form
 render() {
     const {username, email, password, password_confirmation} = this.state
 return (
         <div className="container-fluid">
           <div className="row justify-content-center align-items-center h-100">
-            <div className="col-3 row-6 border border-dark rounded-lg">
+            <div className="col-md-3 row-md-6 border border-dark rounded-lg">
             <h3>Sign Up</h3>
+            {/* displays error messages if any */}
             {this.state.errors !== "" && <div role="alert" className="alert alert-danger">
               {this.handleErrors()}
-            </div>}        
+            </div>}
+            {/* Signup form */}        
             <form role="form" onSubmit={this.handleSubmit}>
               <div className="form-group">
                 <label>Username</label>

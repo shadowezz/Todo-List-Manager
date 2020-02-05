@@ -1,4 +1,6 @@
 class Api::V1::UsersController < ApplicationController
+  
+  / list of users /
   def index
     @users = User.all
     if @users
@@ -13,13 +15,15 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  / create new user during sign up /
   def create
     @user = User.new(user_params)
     if @user.save
       login!
       render json: {
         status: :created,
-        user: @user
+        user: @user,
+        message: "Account created successfully! Please log in to continue."
       }
     else 
       render json: {
@@ -31,6 +35,7 @@ class Api::V1::UsersController < ApplicationController
 
   private
   
+  /restrict user parameter that can be accessed/
   def user_params
     params.require(:user).permit(:username, :email, :password, :password_confirmation)
   end

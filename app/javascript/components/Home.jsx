@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+//landing page
 const Home = () => {
     return (
         <div className="container-fluid text-center">

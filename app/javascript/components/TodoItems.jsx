@@ -7,6 +7,7 @@ import NavBar from './NavBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faCheckCircle, faPencilAlt, faPlusSquare, faSortAlphaDown, faSortNumericDown, faSortNumericDownAlt} from '@fortawesome/free-solid-svg-icons'
 
+//Current todo items page
 class TodoItems extends React.Component {
   constructor(props) {
     super(props);
@@ -14,19 +15,25 @@ class TodoItems extends React.Component {
       all_todos: [],
       displayed_todos: [],
       overdue_todos: 0,
-      hasMessage: false,
       message: this.props.message,
       update: false,
       deleting: false,
       completing: false
     };
+
     this.updateTodo = this.updateTodo.bind(this)
     this.cancelUpdate = this.cancelUpdate.bind(this)
     this.updateDisplay = this.updateDisplay.bind(this)
     this.checkStatus = this.checkStatus.bind(this)
+    this.completeTodo = this.completeTodo.bind(this)
+    this.deleteTodo = this.deleteTodo.bind(this)
+    this.dynamicSort = this.dynamicSort.bind(this)
+    this.handleSort = this.handleSort.bind(this)
   }
 
-
+  /*checks login status. 
+  If logged in, fetch current todo items for current user from backend, 
+  else redirect to login page with message. */
   async componentDidMount() {
     await this.props.checkLogin()
     console.log(this.props.isLoggedIn)
@@ -36,7 +43,6 @@ class TodoItems extends React.Component {
 
     }
     else {
-      console.log(this.state.message)
       axios.get('/api/v1/todo_items/index')
         .then(response => {
           console.log(response.data);
@@ -46,6 +52,7 @@ class TodoItems extends React.Component {
       }
   }
 
+  //check if the todo item is overdue
   checkStatus(todo) {
     if (new Date(todo.deadline).getTime() < new Date().getTime()) {
       todo["status"] = "overdue"
@@ -54,11 +61,13 @@ class TodoItems extends React.Component {
     return todo
   }
 
-  updateDisplay = (newList) => {
+  //update displayed todo items
+  updateDisplay(newList) {
     this.setState({displayed_todos: newList})
   }
 
-  updateTodo = () => {
+  //fetch the new set of current todo from backend after a todo has been updated
+  updateTodo() {
     this.setState({update: false})
     axios.get('/api/v1/todo_items/index')
         .then(response => {
@@ -70,10 +79,13 @@ class TodoItems extends React.Component {
         .catch(error => console.log("api errors:", error))
   }
 
+  //cancels updating todo without posting to backend
   cancelUpdate() {
-    this.setState({update: false, hasMessage: false})
+    this.setState({update: false})
   }
 
+  /*move todo to "completed" list by updating its current_status on backend 
+  and removing it on this page */
   completeTodo(todoItem) {
     let overdue = 0
     if (todoItem.status == "overdue") {
@@ -87,14 +99,15 @@ class TodoItems extends React.Component {
     .then(this.setState({
       displayed_todos: this.state.displayed_todos.filter((item) => item.id != todoItem.id),
       message: "Todo item moved to Completed",
-      hasMessage: true,
       completing: false,
       overdue_todos: this.state.overdue_todos - overdue
     }))
     .catch(error => console.log(error))
+    console.log(this.state.message)
+    console.log(this.props.message)
   }
 
-
+  //delete todo from backend and remove from this page
   deleteTodo(todoItem) {
     let overdue = 0
     if (todoItem.status == "overdue") {
@@ -109,13 +122,13 @@ class TodoItems extends React.Component {
           all_todos: new_todos, 
           displayed_todos: new_display, 
           message: response.data.message, 
-          hasMessage: true, 
           deleting: false,
           overdue_todos: this.state.overdue_todos - overdue})
       })
       .catch(error => console.log(error))
   }
 
+  //sorts displayed todo based on attribute and order
   dynamicSort(key, order = 'asc') {
     return (a, b) => {
         let comparison = 0
@@ -132,6 +145,7 @@ class TodoItems extends React.Component {
     }
   }
 
+  //allows sorting by "created_at" (desc), deadline (asc) and alpha(asc)
   handleSort(key) {
       let newList
       if (key === "created_at") {
@@ -141,10 +155,10 @@ class TodoItems extends React.Component {
         newList = this.state.displayed_todos.sort(this.dynamicSort(key, 'asc'))
       }
 
-      this.setState({displayed_todos: newList})
+      this.updateDisplay(newList)
   }
 
-
+  //current todo page
   render() {
     const allTodos = this.state.displayed_todos.map((todo, index) => (
       <tr key={index} className={todo.status}>
@@ -169,11 +183,14 @@ class TodoItems extends React.Component {
         </td>
       </tr>
     ));
+
+    //if not updating todo, return page with current todo
     if (!this.state.update) {
       return (
         <div className="container-fluid">
           <NavBar handleLogout={this.props.handleLogout} clearMessage={this.props.clearMessage}/>
 
+          {/* popup modal that asks for confirmation when user completes todo */}
           <div className="modal fade" id="completeModal" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
               <div className="modal-content">
@@ -196,6 +213,7 @@ class TodoItems extends React.Component {
             </div>
           </div>
 
+          {/* popup modal that asks for confirmation when user deletes todo */}
           <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog">
             <div className="modal-dialog" role="document">
               <div className="modal-content">
@@ -217,18 +235,19 @@ class TodoItems extends React.Component {
             </div>
           </div>
         <div>
+
+            {/* standard page with a table of todo items */}
             <h1>Welcome {localStorage.getItem("username")}</h1>
             <h3>Here are your current todo items.</h3>
             {this.state.overdue_todos > 0 && <h5>You have {this.state.overdue_todos} overdue todo items!</h5>}
-            {this.state.message !== "" && <div role="alert" className="alert alert-success alert-dismissable"> 
-              <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={() => this.props.clearMessage()}>&times;</a>
+            {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
               {this.state.message}
             </div>}
             <Search all_todos={this.state.all_todos} displayed_todos={this.state.displayed_todos} 
               updateDisplay={this.updateDisplay}/>
         </div>
         <div>
-          <table className="table table-striped">
+          <table className="table table-striped table-responsive">
             <thead className="thead-dark">
               <tr>
                 <th scope="col">#</th>
@@ -267,10 +286,10 @@ class TodoItems extends React.Component {
       )
     }
 
+    //if updating todo, display update form
     else {
       return (
-        <EditForm todo = {this.state.update} updateTodo = {this.updateTodo} 
-          user={this.props.user} checkLogin={this.props.checkLogin} 
+        <EditForm todo = {this.state.update} updateTodo = {this.updateTodo}  
           cancelUpdate = {this.cancelUpdate}/>
       )
     }

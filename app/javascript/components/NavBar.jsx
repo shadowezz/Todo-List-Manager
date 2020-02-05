@@ -1,11 +1,14 @@
 import React from 'react'
 import {Link} from "react-router-dom"
 
+//Navigation bar after login
 class NavBar extends React.Component {
     constructor(props) {
         super(props)
     }
 
+    /* Displays Navbar that allows toggling between current todo and completed todo,
+    as well as logout */
     render() {
         return (
             <nav className="navbar sticky-top navbar-expand-md">

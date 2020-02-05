@@ -1,4 +1,5 @@
 class Api::V1::SessionsController < ApplicationController
+  /create new session if user authenticated/
   def create
     @user = User.find_by(email: session_params[:email])
   
@@ -16,6 +17,7 @@ class Api::V1::SessionsController < ApplicationController
     end
   end
 
+  /check login status of user/
   def is_logged_in?
     if logged_in? && current_user
       render json: {
@@ -30,6 +32,7 @@ class Api::V1::SessionsController < ApplicationController
     end
   end
 
+  /delete session (logout)/
   def destroy
     logout!
     render json: {
@@ -40,6 +43,7 @@ class Api::V1::SessionsController < ApplicationController
 
   private
 
+  /restrict session parameter that can be accessed/
   def session_params
     params.require(:user).permit(:username, :email, :password)
   end

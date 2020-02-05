@@ -2,6 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 
+//Search bar display
 class Search extends React.Component {
     constructor(props) {
         super(props)
@@ -12,10 +13,12 @@ class Search extends React.Component {
         this.changeSearch = this.changeSearch.bind(this)
     }
 
+    //toggles search attribute between 'title' and 'category'
     changeSearch(event) {
         this.setState({searchBy: event.target.value})
     }
 
+    //filters todo list based on input in search box
     handleSearch(event) {
         let newList = []
         if (event.target.value !== "") {
@@ -32,8 +35,7 @@ class Search extends React.Component {
         this.props.updateDisplay(newList)
     }
 
-
-
+    //Search bar display
     render() {
         return (
             <div>

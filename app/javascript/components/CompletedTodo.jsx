@@ -1,24 +1,27 @@
 import React from "react";
-import {Link} from "react-router-dom";
 import axios from 'axios';
 import Search from './Search';
 import NavBar from './NavBar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faSortAlphaDown, faSortNumericDown, faSortNumericDownAlt} from '@fortawesome/free-solid-svg-icons'
 
+//Completed todos page
 class CompletedTodo extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       all_todos: [],
       displayed_todos: [],
-      hasMessage: false,
       message: "",
       deleting: false,
-    };
+    }
     this.updateDisplay = this.updateDisplay.bind(this)
+    this.deleteTodo = this.deleteTodo.bind(this)
+    this.dynamicSort = this.dynamicSort.bind(this)
+    this.handleSort = this.handleSort.bind(this)
   }
 
+  //check backend for login status, if not redirect to login page
   async componentDidMount() {
     await this.props.checkLogin()
     console.log(this.props.isLoggedIn)
@@ -36,22 +39,25 @@ class CompletedTodo extends React.Component {
       }
   }
 
-  updateDisplay = (newList) => {
+  //update state of displayed completed list
+  updateDisplay(newList) {
     this.setState({displayed_todos: newList})
   }
 
-  deleteTodo = (id) => {
+  //delete completed todo from backend and update frontend display
+  deleteTodo(id) {
     axios.delete(`/api/v1/destroy/${id}`, {withCredentials:true})
       .then(response => {
         console.log(response.data.message)
         const new_todos = this.state.all_todos.filter((item) => item.id != id)
         const new_display = this.state.displayed_todos.filter((item) => item.id != id)
         this.setState({ all_todos: new_todos, displayed_todos: new_display, 
-          message: response.data.message, hasMessage: true, deleting: false})
+          message: response.data.message, deleting: false})
       })
       .catch(error => console.log(error))
   }
 
+  //Sorting by attribute and order
   dynamicSort(key, order = 'asc') {
     return (a, b) => {
         let comparison = 0
@@ -68,6 +74,7 @@ class CompletedTodo extends React.Component {
     }
   }
 
+  //allows sorting by "created_at" (desc), deadline (asc) and alpha(asc)
   handleSort(key) {
       let newList
       if (key === "created_at") {
@@ -80,6 +87,7 @@ class CompletedTodo extends React.Component {
       this.setState({displayed_todos: newList})
   }
 
+  //Completed todo page
   render() {
     const allTodos = this.state.displayed_todos.map((todo, index) => (
       <tr key={index} className="status" cond="hello">
@@ -98,8 +106,9 @@ class CompletedTodo extends React.Component {
 
     return (
         <div className="container-fluid">
-            <NavBar handleLogout={this.props.handleLogout} user={this.props.user}/>
+            <NavBar handleLogout={this.props.handleLogout}/>
 
+            {/* popup modal that asks for confirmation when user deletes todo */}
             <div className="modal fade" id="deleteModal" tabIndex="-1" role="dialog">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">
@@ -121,18 +130,18 @@ class CompletedTodo extends React.Component {
                 </div>
             </div>
 
+            {/* standard page with a table of completed todo items */}
             <div>
                 <h1>Welcome {localStorage.getItem("username")}</h1>
                 <h3>Here are your completed todo items.</h3>
-                {this.state.message !== "" && <div role="alert" className="alert alert-success alert-dismissable">
-                    <a href="#" className="close" data-dismiss="alert" aria-label="close" onClick={() => this.props.clearMessage()}>&times;</a> 
-                    {this.state.message}
+                {this.state.message !== "" && <div role="alert" className="alert alert-success"> 
+                  {this.state.message}
                 </div>}
                 <Search all_todos={this.state.all_todos} displayed_todos={this.state.displayed_todos} 
                     updateDisplay={this.updateDisplay}/>
             </div>
             <div>
-                <table className="table table-striped">
+                <table className="table table-striped table-responsive">
                     <thead className="thead-dark">
                         <tr>
                             <th scope="col">#</th>

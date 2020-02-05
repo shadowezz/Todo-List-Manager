@@ -4,6 +4,7 @@ import axios from 'axios'
 import DateTimePicker from 'react-datetime-picker'
 import NavBar from './NavBar'
 
+//Page to create new todo
 class NewTodo extends React.Component {
     constructor(props) {
         super(props);
@@ -14,8 +15,12 @@ class NewTodo extends React.Component {
             deadline: new Date(),
             errors: ""
         }
-    ;}
-
+        this.handleChange = this.handleChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
+        this.dateChange = this.dateChange.bind(this)
+    }
+    
+    //check login status on backend, if not redirect to login page
     async componentDidMount() {
         await this.props.checkLogin()
         if (!this.props.isLoggedIn) {
@@ -24,18 +29,21 @@ class NewTodo extends React.Component {
         }
     }
   
-
-    handleChange = (event) => {
+    //changes state according to changes in the input fields of create form
+    handleChange(event) {
         const {name, value} = event.target
         this.setState({
           [name]: value
         })
-      }
-    dateChange = (deadline) => {
+    }
+
+    //changes state of deadline according to changes in datepicker
+    dateChange(deadline) {
       this.setState({deadline: deadline})
     }
 
-    handleSubmit = (event) => {
+    //submit create form to backend
+    handleSubmit(event) {
         event.preventDefault()
         const {title, description, category, deadline} = this.state
 
@@ -49,9 +57,7 @@ class NewTodo extends React.Component {
             .then(response => {
             if (response.data.status === 'created') {
                 this.props.setMessage("New Todo created successfully!")
-                this.props.history.push('/todo_items')
-
-                
+                this.props.history.push('/todo_items')          
             } else {
                 this.setState({
                   errors: response.data.errors
@@ -60,25 +66,15 @@ class NewTodo extends React.Component {
             })
             .catch(error => console.log('api errors:', error))  
         };
-        
-
-    handleErrors = () => {
-        return (
-          <div>
-            <ul>{this.state.errors.map((error) => {
-              return <li className="list-unstyled" key={error}>{error}</li>
-            })}
-            </ul> 
-          </div>
-        )
-      }
+  
+    //display create new todo form
     render() {
         const {title, description, category, deadline} = this.state
     return (
           <div className="container-fluid">
             <NavBar user={this.props.user} handleLogout={this.props.handleLogout}/>
             <div className="row justify-content-center align-items-center h-100">
-              <div className="col-3 row-6 border border-dark rounded-lg">
+              <div className="col-md-3 row-md-6 border border-dark rounded-lg">
                 <h3>Create New Todo Item</h3>
                 {this.state.errors != "" && <div role="alert" className="alert alert-danger"> 
                   {this.state.errors}
