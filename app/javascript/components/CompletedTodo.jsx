@@ -141,7 +141,7 @@ class CompletedTodo extends React.Component {
                     updateDisplay={this.updateDisplay}/>
             </div>
             <div>
-                <table className="table table-striped table-responsive">
+                <table className="table table-striped table-responsive-md">
                     <thead className="thead-dark">
                         <tr>
                             <th scope="col">#</th>
