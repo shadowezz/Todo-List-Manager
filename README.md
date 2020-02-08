@@ -1,26 +1,8 @@
 # README
 
-Cao Wenjie A0205344N
+Name: Cao Wenjie 
+Matriculation Number: A0205344N
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Todo Manager is a simple web application for users to better organise their tasks so as to lead a more productive and fulfilling life. Frontend of this application is done with React and Bootstrap, backend uses Ruby and Rails, and deployment is done using Heroku. You can check out my application here:
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+https://todo-app-manager.herokuapp.com/
